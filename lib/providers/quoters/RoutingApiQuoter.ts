@@ -8,11 +8,12 @@ import { ClassicQuote, ClassicQuoteDataJSON, ClassicRequest, Quote, QuoteRequest
 import { metrics } from '../../util/metrics';
 import axios from './helpers';
 import { Quoter, QuoterType } from './index';
+import Logger from 'bunyan';
 
 export class RoutingApiQuoter implements Quoter {
   static readonly type: QuoterType.ROUTING_API;
 
-  constructor(private routingApiUrl: string, private routingApiKey: string) {}
+  constructor(private routingApiUrl: string, private routingApiKey: string, private log: Logger | undefined = undefined) {}
 
   async quote(request: ClassicRequest): Promise<Quote | null> {
     if (request.routingType !== RoutingType.CLASSIC) {
@@ -23,10 +24,18 @@ export class RoutingApiQuoter implements Quoter {
     try {
       const req = this.buildRequest(request);
       const now = Date.now();
-      const requestHeaders: QuoteRequestHeaders = { 'x-api-key': this.routingApiKey };
-      if (request.headers['x-request-source']) requestHeaders['x-request-source'] = request.headers['x-request-source'];
-      if (request.headers['x-app-version']) requestHeaders['x-app-version'] = request.headers['x-app-version'];
+      const requestHeaders: QuoteRequestHeaders = {};
 
+      if (this.routingApiKey) {
+        requestHeaders['x-api-key'] = this.routingApiKey;
+      }
+      if (request.headers) {
+        if (request.headers['x-request-source']) requestHeaders['x-request-source'] = request.headers['x-request-source'];
+        if (request.headers['x-app-version']) requestHeaders['x-app-version'] = request.headers['x-app-version'];
+      }
+
+      this.log?.info({ req }, `RoutingApiQuoter quote request: ${req}`);
+    
       const response = await axios.get<ClassicQuoteDataJSON>(req, {
         headers: requestHeaders,
       });
@@ -73,8 +82,11 @@ export class RoutingApiQuoter implements Quoter {
       // We also want to retry the request if there is a non-"AxiosError".
       // This may be caused by a network interruption or some other infra related issues.
       if (!axios.isAxiosError(e)) {
+        this.log?.error(e, `RoutingApiQuoter quote error: ${JSON.stringify(e)}`);
+
         throw e;
       }
+      this.log?.error(e, `RoutingApiQuoter quote error: ${e.message}`);
 
       const status = e.response?.status;
       if (status && (status === 429 || status >= 500)) {

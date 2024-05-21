@@ -425,7 +425,7 @@ export async function getQuotes(quoterByRoutingType: QuoterByRoutingType, reques
   const errors = results.filter(
     (result) =>
       result.status === 'rejected' &&
-      (parseInt(result?.reason?.response.status) >= 500 || parseInt(result?.reason?.response.status) === 429)
+      (parseInt(result?.reason?.response?.status) >= 500 || parseInt(result?.reason?.response?.status) === 429)
   ) as PromiseRejectedResult[];
 
   // throw QuoteFetchError if there are no available quotes and at least one 5xx error

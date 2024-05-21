@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { CfnOutput, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
-import * as chatbot from 'aws-cdk-lib/aws-chatbot';
+// import * as chatbot from 'aws-cdk-lib/aws-chatbot';
 import { BuildEnvironmentVariableType, BuildSpec } from 'aws-cdk-lib/aws-codebuild';
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
 import { CodeBuildStep, CodePipeline, CodePipelineSource } from 'aws-cdk-lib/pipelines';
@@ -8,7 +8,7 @@ import { Construct } from 'constructs';
 import dotenv from 'dotenv';
 
 import { ChainId } from '@uniswap/sdk-core';
-import { PipelineNotificationEvents } from 'aws-cdk-lib/aws-codepipeline';
+// import { PipelineNotificationEvents } from 'aws-cdk-lib/aws-codepipeline';
 import { SUPPORTED_CHAINS } from '../lib/config/chains';
 import { RoutingType } from '../lib/constants';
 import { STAGE } from '../lib/util/stage';
@@ -52,7 +52,7 @@ export class APIPipeline extends Stack {
 
     const code = CodePipelineSource.connection('Uniswap/unified-routing-api', 'main', {
       connectionArn:
-        'arn:aws:codestar-connections:us-east-2:644039819003:connection/4806faf1-c31e-4ea2-a5bf-c6fc1fa79487',
+        'arn:aws:codestar-connections:us-west-2:637423333711:connection/4806faf1-c31e-4ea2-a5bf-c6fc1fa79487',
     });
 
     const synthStep = new CodeBuildStep('Synth', {
@@ -94,20 +94,20 @@ export class APIPipeline extends Stack {
     });
 
     const internalKeySecret = sm.Secret.fromSecretAttributes(this, 'internalApiKey', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:URA-internal-api-key-Ke663y',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:URA-internal-api-key-Ke663y',
     });
 
     const urlSecrets = sm.Secret.fromSecretAttributes(this, 'urlSecrets', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:gouda-service-api-xCINOs',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:gouda-service-api-Zl5eCt',
     });
 
     const arnSecrects = sm.Secret.fromSecretAttributes(this, 'arnSecrets', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:gouda-resource-arns-wF51FW',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:gouda-resource-arns-wF51FW',
     });
 
     const jsonRpcProvidersSecret = sm.Secret.fromSecretAttributes(this, 'RPCProviderUrls', {
       // Infura RPC urls
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:prod/URA/rpc-urls/v1-sRkBDE',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:prod/URA/rpc-urls/v1-sRkBDE',
     });
 
     const jsonRpcProviders = {} as { [chainKey: string]: string };
@@ -117,37 +117,37 @@ export class APIPipeline extends Stack {
     });
 
     const routingApiKeySecret = sm.Secret.fromSecretAttributes(this, 'routing-api-key', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:routing-api-internal-api-key-Z68NmB',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:routing-api-internal-api-key-Z68NmB',
     });
 
     const betaRfqLabsCosignerAddress = sm.Secret.fromSecretAttributes(this, 'beta-labs-cosigner-address', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:param-api/beta/cosignerAddress-gkPfRf',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:param-api/beta/cosignerAddress-gkPfRf',
     });
 
     const prodRfqLabsCosignerAddress = sm.Secret.fromSecretAttributes(this, 'prod-rfq-labs-cosigner-address', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:param-api/prod/cosignerAddress-tgNwAd',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:param-api/prod/cosignerAddress-tgNwAd',
     });
 
     const parameterizationApiKeySecret = sm.Secret.fromSecretAttributes(this, 'parameterization-api-api-key', {
       secretCompleteArn:
-        'arn:aws:secretsmanager:us-east-2:644039819003:secret:gouda-parameterization-api-internal-api-key-uw4sIa',
+        'arn:aws:secretsmanager:us-west-2:637423333711:secret:gouda-parameterization-api-internal-api-key-uw4sIa',
     });
 
     const syntheticSwitchApiKeySecret = sm.Secret.fromSecretAttributes(this, 'synthetic-switch-api-key', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:UniswapX/ParamApi/ApiKeys-hYyUt1',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:UniswapX/ParamApi/ApiKeys-hYyUt1',
     });
 
     const portionFlagSecret = sm.Secret.fromSecretAttributes(this, 'portion-flag', {
-      secretCompleteArn: 'arn:aws:secretsmanager:us-east-2:644039819003:secret:portion-flag-yR0VGr',
+      secretCompleteArn: 'arn:aws:secretsmanager:us-west-2:637423333711:secret:portion-flag-yR0VGr',
     });
 
-    // Beta us-east-2
-    const betaUsEast2Stage = new APIStage(this, 'beta-us-east-2', {
-      env: { account: '665191769009', region: 'us-east-2' },
+    // Beta us-west-2
+    const betaUsEast2Stage = new APIStage(this, 'beta-us-west-2', {
+      env: { account: '637423333711', region: 'us-west-2' },
       provisionedConcurrency: 1,
       stage: STAGE.BETA,
       internalApiKey: internalKeySecret.secretValue.toString(),
-      chatbotSNSArn: 'arn:aws:sns:us-east-2:644039819003:SlackChatbotTopic',
+      chatbotSNSArn: 'arn:aws:sns:us-west-2:637423333711:SlackChatbotTopic',
       envVars: {
         ...envVars,
         ...jsonRpcProviders,
@@ -170,12 +170,12 @@ export class APIPipeline extends Stack {
     const betaUsEast2AppStage = pipeline.addStage(betaUsEast2Stage);
     this.addIntegTests(code, betaUsEast2Stage, betaUsEast2AppStage, STAGE.BETA);
 
-    // Prod us-east-2
-    const prodUsEast2Stage = new APIStage(this, 'prod-us-east-2', {
-      env: { account: '652077092967', region: 'us-east-2' },
+    // Prod us-west-2
+    const prodUsEast2Stage = new APIStage(this, 'prod-us-west-2', {
+      env: { account: '637423333711', region: 'us-west-2' },
       provisionedConcurrency: 50,
       internalApiKey: internalKeySecret.secretValue.toString(),
-      chatbotSNSArn: 'arn:aws:sns:us-east-2:644039819003:SlackChatbotTopic',
+      chatbotSNSArn: 'arn:aws:sns:us-west-2:637423333711:SlackChatbotTopic',
       stage: STAGE.PROD,
       envVars: {
         ...envVars,
@@ -199,16 +199,16 @@ export class APIPipeline extends Stack {
 
     this.addIntegTests(code, prodUsEast2Stage, prodUsEast2AppStage, STAGE.PROD);
 
-    const slackChannel = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
-      this,
-      'SlackChannel',
-      'arn:aws:chatbot::644039819003:chat-configuration/slack-channel/eng-ops-protocols-slack-chatbot'
-    );
+    // const slackChannel = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(
+    //   this,
+    //   'SlackChannel',
+    //   'arn:aws:chatbot::637423333711:chat-configuration/slack-channel/eng-ops-protocols-slack-chatbot'
+    // );
 
     pipeline.buildPipeline();
-    pipeline.pipeline.notifyOn('NotifySlack', slackChannel, {
-      events: [PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED],
-    });
+    // pipeline.pipeline.notifyOn('NotifySlack', slackChannel, {
+    //   events: [PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED],
+    // });
   }
 
   private addIntegTests(
@@ -320,5 +320,5 @@ new APIStack(app, `${SERVICE_NAME}Stack`, {
 });
 
 new APIPipeline(app, `${SERVICE_NAME}PipelineStack`, {
-  env: { account: '644039819003', region: 'us-east-2' },
+  env: { account: '637423333711', region: 'us-west-2' },
 });
