@@ -236,7 +236,7 @@ export class APIStack extends cdk.Stack {
         ...props.envVars,
       },
       timeout: cdk.Duration.seconds(30),
-      logRetention: aws_logs.RetentionDays.ONE_MONTH,
+      logRetention: aws_logs.RetentionDays.ONE_DAY,
     });
 
     const quoteLambdaAlias = new aws_lambda.Alias(this, `GetOrdersLiveAlias`, {
